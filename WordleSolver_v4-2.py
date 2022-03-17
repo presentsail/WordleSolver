@@ -144,8 +144,8 @@ class WordleSolver:
                 for let in evl:
                     if let not in {'g','y','b',}:
                         break
-                    else:
-                        return evl
+                else:
+                    return evl
             print('Error: Invalid input')
 
     def askWord(self):
