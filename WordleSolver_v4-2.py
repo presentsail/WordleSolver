@@ -35,7 +35,10 @@ class WordleSolver:
         self.run()
 
     def __str__(self):
-        string = f'green: {self.green}\nyellow: {self.yellow}\n{self.cum_yel}\nblack: {self.black}\n'
+        string = (f'green: {self.green}\n'
+                  + f'yellow: {self.yellow}\n'
+                  + f'{self.cum_yel}\n'
+                  + f'black: {self.black}\n')
         return string
 
     def findQuali(self):
