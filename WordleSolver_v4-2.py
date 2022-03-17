@@ -6,6 +6,7 @@ with open('words.txt','r') as f:
             fiveLet.add(line)
             
 from itertools import islice
+from collections import Counter
 
 class WordleSolver:
     
@@ -15,9 +16,11 @@ class WordleSolver:
               'k': 11, 'f': 10, 'w': 9, 'v': 6, 'z': 2, 'x': 2,
               'j': 2, 'q': 1
              }
-    def __init__(self, infile):
+    def __init__(self, infile, resetPoints=False):
 
         self.infile = infile
+        if resetPoints:
+            self.setPoints()
 
         self.green = []
         self.yellow = dict([(i, set()) for i in range(5)])
@@ -202,5 +205,22 @@ class WordleSolver:
                 break
 
             self.attempts += 1
+
+    def setPoints(self):
+        '''Resets the points attribute according to words in infile.'''
+        L = []
+        for w in fiveLet:
+            L += list(w)
+        d = dict(Counter(L))
+        minimum = min(d.values())
+        for k in d:
+            d[k] //= minimum
+
+        d = dict(sorted(
+            d.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        ))
+        self.points = d
 
 app = WordleSolver(fiveLet)
