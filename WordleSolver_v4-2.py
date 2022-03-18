@@ -102,13 +102,17 @@ class WordleSolver:
         for i, (c, w) in enumerate(zip(colors, word)):
             if c == 'g':
                 self.green.append(w)
+                if c in self.black:
+                    self.black.remove(c)
             else:
                 self.green.append('')
 
             if c == 'y':
                 self.yellow[i].add(w)
+                if c in self.black:
+                    self.black.remove(c)
 
-            if c == 'b':
+            if c == 'b' and c not in self.green and c not in self.yellow:
                 self.black.add(w)
 
         self.cum_yel = set.union(*self.yellow.values())
