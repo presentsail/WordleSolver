@@ -217,19 +217,19 @@ class WordleSolver:
 
     def setPoints(self):
         '''Resets the points attribute according to words in infile.'''
-        L = []
-        for w in self.fiveLet:
-            L += list(w)
-        d = dict(Counter(L))
-        minimum = min(d.values())
-        for k in d:
-            d[k] //= minimum
+        allLets = []
+        for word in self.fiveLet:
+            allLets += list(word)
+        letCount = dict(Counter(allLets))
+        minimum = min(letCount.values())
+        for let in letCount:
+            letCount[let] //= minimum
 
-        d = dict(sorted(
-            d.items(),
+        letCount = dict(sorted(
+            letCount.items(),
             key=lambda item: item[1],
             reverse=True,
         ))
-        self.points = d
+        self.points = letCount
 
 app = WordleSolver(fiveLet)
