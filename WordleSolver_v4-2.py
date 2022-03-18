@@ -1,3 +1,4 @@
+# Make a set of five letter words from file
 fiveLet = set()
 with open('words.txt','r') as f:
     for line in f:
@@ -218,7 +219,7 @@ class WordleSolver:
     def setPoints(self):
         '''Resets the points attribute according to words in infile.'''
         allLets = []
-        for word in self.fiveLet:
+        for word in self.infile:
             allLets += list(word)
         letCount = dict(Counter(allLets))
         minimum = min(letCount.values())
