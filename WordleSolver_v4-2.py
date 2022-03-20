@@ -96,7 +96,7 @@ class WordleSolver:
         print(self.result, self.resultScore, '\n')
         return self.result
 
-    def evaluate(self, colors, word):
+    def evaluate(self, colors: str, word: str):
         '''Sets instance attrs according to given colors'''
         self.green.clear()
         for i, (c, w) in enumerate(zip(colors, word)):
@@ -117,7 +117,7 @@ class WordleSolver:
 
         self.cum_yel = set.union(*self.yellow.values())
 
-    def askAction(self, prevAct3=False):
+    def askAction(self, prevAct3:bool=False):
         '''Determines available actions, displays them, and asks user
         what they want to do.
         '''
