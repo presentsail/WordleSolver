@@ -10,22 +10,42 @@ from itertools import islice
 from collections import Counter
 
 class WordleSolver:
-    
-    points = {'s': 61, 'e': 61, 'a': 52, 'r': 39, 'o': 38, 'i': 34,
-              'l': 32, 't': 30, 'n': 26, 'd': 23, 'u': 22, 'c': 19,
-              'p': 18, 'y': 18, 'm': 17, 'h': 16, 'g': 14, 'b': 14,
-              'k': 11, 'f': 10, 'w': 9, 'v': 6, 'z': 2, 'x': 2,
-              'j': 2, 'q': 1
-             }
-    
-    def __init__(self, infile, resetPoints=False):
 
+    points = {
+        's': 61, 'e': 61, 'a': 52, 'r': 39, 'o': 38, 'i': 34,
+        'l': 32, 't': 30, 'n': 26, 'd': 23, 'u': 22, 'c': 19,
+        'p': 18, 'y': 18, 'm': 17, 'h': 16, 'g': 14, 'b': 14,
+        'k': 11, 'f': 10, 'w': 9, 'v': 6, 'z': 2, 'x': 2,
+        'j': 2, 'q': 1
+    }
+    
+    def __init__(
+        self, 
+        infile:iter, 
+        wordlength:int = 5, 
+        resetPoints:bool = False,
+    ):
+        '''
+        Initiates WordleSolver instance attributes and runs run method.
+
+        :param infile: Iterable of words to be searched through.
+                       All words should be the length specified
+                       in wordlength.
+
+        :param wordlength: Length of words that to be put in Wordle.
+                           Defaults to 5.
+
+        :param resetPoints: Whether or not to reinitialize how words are
+                            scored based on words in infile.
+        '''
         self.infile = infile
         if resetPoints:
             self.setPoints()
 
+        self.length = wordlength
+
         self.green = []
-        self.yellow = {0: set(), 1: set(), 2: set(), 3: set(), 4: set()}
+        self.yellow = {position: set() for position in self.length}
         self.cum_yel = set()
         self.black = set()
 
@@ -89,7 +109,7 @@ class WordleSolver:
             reverse=True,
         ))
 
-    def getTopHit(self):
+    def getTopHit(self) -> str:
         '''Sets, prints, and returns result with highest value.'''
         self.result = max(self.results, key=self.results.get)
         self.resultScore = max(self.results.values())
@@ -117,9 +137,13 @@ class WordleSolver:
 
         self.cum_yel = set.union(*self.yellow.values())
 
-    def askAction(self, prevAct3:bool=False):
-        '''Determines available actions, displays them, and asks user
+    def askAction(self, prevAct3:bool=False) -> str:
+        '''
+        Determines available actions, displays them, and asks user
         what they want to do.
+
+        :param prevAct3: Whether or not the user previously selected
+                         action 3.
         '''
         options = {"1": "use word",
                    "2": "reroll",
@@ -156,7 +180,7 @@ class WordleSolver:
             evl = input(f'Enter colors for word {self.result}:  ')
             evl = evl.lower()
 
-            if len(evl) == 5:
+            if len(evl) == self.length:
                 for let in evl:
                     if let not in {'g','y','b',}:
                         break
@@ -170,10 +194,10 @@ class WordleSolver:
             word = input('Enter word:  ')
             word = word.lower()
 
-            if len(word) == 5:
+            if len(word) == self.length:
                 return word
 
-            print('Error: Word must be 5 letters')
+            print(f'Error: Word must be {self.length} letters')
 
     def checkCont(self):
         '''Checks if program should be ended'''
