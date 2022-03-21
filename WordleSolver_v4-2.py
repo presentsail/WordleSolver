@@ -23,7 +23,7 @@ class WordleSolver:
         self, 
         infile:iter, 
         wordlength:int = 5, 
-        resetPoints:bool = False,
+        resetpoints:bool = False,
     ):
         '''
         Initiates WordleSolver instance attributes and runs run method.
@@ -35,23 +35,23 @@ class WordleSolver:
         :param wordlength: Length of words that to be put in Wordle.
                            Defaults to 5.
 
-        :param resetPoints: Whether or not to reinitialize how words are
+        :param resetpoints: Whether or not to reinitialize how words are
                             scored based on words in infile.
         '''
         self.infile = infile
-        if resetPoints:
-            self.setPoints()
+        if resetpoints:
+            self.setpoints()
 
         self.length = wordlength
 
         self.green = []
-        self.yellow = {position: set() for position in self.length}
+        self.yellow = {position: set() for position in range(self.length)}
         self.cum_yel = set()
         self.black = set()
 
         self.results = {}
         self.result = ""
-        self.resultScore = 0
+        self.topscore = 0
 
         self.action = -1
 
@@ -66,24 +66,24 @@ class WordleSolver:
                   + f'black: {self.black}\n')
         return string
 
-    def findQuali(self):
+    def findqualifiers(self):
         '''Fills results with words that meet Wordle requiremets.'''
         self.results.clear()
 
         for word in self.infile:
             score = 0
-            for i, (grnLet, wrdLet) in (
+            for i, (greenlet, wordlet) in (
                 enumerate(zip(self.green, word))
             ):
                 if (
-                    (grnLet != '' and grnLet != wrdLet)
-                    or (wrdLet in self.yellow[i])
-                    or (wrdLet in self.black)
+                    (greenlet != '' and greenlet != wordlet)
+                    or (wordlet in self.yellow[i])
+                    or (wordlet in self.black)
                 ):
                     score = -1
 
-            for yelLet in self.cum_yel:
-                if yelLet not in word:
+            for yellowlet in self.cum_yel:
+                if yellowlet not in word:
                     score = -1
 
             if score != -1:
@@ -91,7 +91,7 @@ class WordleSolver:
 
         print(f'\n{len(self.results)} results found')
 
-    def assignScore(self):
+    def assignscores(self):
         '''Gives each word in results a score based on its letters.'''
         for word in self.results:
             self.results[word] = 0
@@ -109,11 +109,11 @@ class WordleSolver:
             reverse=True,
         ))
 
-    def getTopHit(self) -> str:
+    def gettophit(self) -> str:
         '''Sets, prints, and returns result with highest value.'''
         self.result = max(self.results, key=self.results.get)
-        self.resultScore = max(self.results.values())
-        print(self.result, self.resultScore, '\n')
+        self.topscore = max(self.results.values())
+        print(self.result, self.topscore, '\n')
         return self.result
 
     def evaluate(self, colors: str, word: str):
@@ -137,12 +137,12 @@ class WordleSolver:
 
         self.cum_yel = set.union(*self.yellow.values())
 
-    def askAction(self, prevAct3:bool=False) -> str:
+    def askaction(self, prevact3:bool=False) -> str:
         '''
         Determines available actions, displays them, and asks user
         what they want to do.
 
-        :param prevAct3: Whether or not the user previously selected
+        :param prevact3: Whether or not the user previously selected
                          action 3.
         '''
         options = {"1": "use word",
@@ -156,7 +156,7 @@ class WordleSolver:
             del options['2']
             del options['3']
 
-        if prevAct3:
+        if prevact3:
             del options['1']
             del options['2']
 
@@ -174,7 +174,7 @@ class WordleSolver:
 
             print('Error: Invalid input')
 
-    def askEval(self):
+    def askeval(self):
         '''Asks user for and returns colors given by Wordle'''
         while True:
             evl = input(f'Enter colors for word {self.result}:  ')
@@ -188,7 +188,7 @@ class WordleSolver:
                     return evl
             print('Error: Invalid input')
 
-    def askWord(self):
+    def askword(self):
         '''Asks for and returns word entered by user'''
         while True:
             word = input('Enter word:  ')
@@ -199,66 +199,66 @@ class WordleSolver:
 
             print(f'Error: Word must be {self.length} letters')
 
-    def checkCont(self):
+    def checkcont(self):
         '''Checks if program should be ended'''
         if (self.green and '' not in self.green) or self.action == '5':
             print(f'Program ended on {self.attempts} attempts')
             return False
         return True
 
-    def getTopFive(self):
+    def gettopfive(self):
         '''Prints and removes top five results'''
-        resultSlice = dict(islice(self.results.items(), 5))
-        print(f'\n{resultSlice}\n')
-        [self.results.pop(key) for key in resultSlice.keys()]
+        result_slice = dict(islice(self.results.items(), 5))
+        print(f'\n{result_slice}\n')
+        [self.results.pop(key) for key in result_slice.keys()]
 
     def run(self):
         while True:
-            self.findQuali()
-            self.assignScore()
-            self.getTopHit()
+            self.findqualifiers()
+            self.assignscores()
+            self.gettophit()
             while True:
-                self.action = self.askAction(prevAct3=self.action=='3')
+                self.action = self.askaction(prevact3=self.action=='3')
 
                 if self.action == '1':
-                    self.evaluate(self.askEval(), self.result)
+                    self.evaluate(self.askeval(), self.result)
                     break
 
                 elif self.action == '2':
                     del self.results[self.result]
-                    self.getTopHit()
+                    self.gettophit()
 
                 elif self.action == '3':
-                    self.getTopFive()
+                    self.gettopfive()
 
                 elif self.action == '4':
-                    self.result = self.askWord()
-                    self.evaluate(self.askEval(), self.result)
+                    self.result = self.askword()
+                    self.evaluate(self.askeval(), self.result)
                     break
                 
                 elif self.action == '5':
                     break
 
-            if not self.checkCont():
+            if not self.checkcont():
                 break
 
             self.attempts += 1
 
-    def setPoints(self):
+    def setpoints(self):
         '''Resets the points attribute according to words in infile.'''
-        allLets = []
+        all_lets = []
         for word in self.infile:
-            allLets += list(word)
-        letCount = dict(Counter(allLets))
-        minimum = min(letCount.values())
-        for let in letCount:
-            letCount[let] //= minimum
+            all_lets += list(word)
+        let_count = dict(Counter(all_lets))
+        minimum = min(let_count.values())
+        for let in let_count:
+            let_count[let] //= minimum
 
-        letCount = dict(sorted(
-            letCount.items(),
+        let_count = dict(sorted(
+            let_count.items(),
             key=lambda item: item[1],
             reverse=True,
         ))
-        self.points = letCount
+        self.points = let_count
 
 app = WordleSolver(fiveLet)
