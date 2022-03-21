@@ -117,7 +117,7 @@ class WordleSolver:
         return self.result
 
     def evaluate(self, colors: str, word: str):
-        '''Sets instance attrs according to given colors'''
+        '''Sets instance attributes according to given colors.'''
         self.green.clear()
         for i, (c, w) in enumerate(zip(colors, word)):
             if c == 'g':
@@ -174,7 +174,7 @@ class WordleSolver:
 
             print('Error: Invalid input')
 
-    def askeval(self):
+    def askeval(self) -> str:
         '''Asks user for and returns colors given by Wordle'''
         while True:
             evl = input(f'Enter colors for word {self.result}:  ')
@@ -188,7 +188,7 @@ class WordleSolver:
                     return evl
             print('Error: Invalid input')
 
-    def askword(self):
+    def askword(self) -> str:
         '''Asks for and returns word entered by user'''
         while True:
             word = input('Enter word:  ')
@@ -199,18 +199,19 @@ class WordleSolver:
 
             print(f'Error: Word must be {self.length} letters')
 
-    def checkcont(self):
+    def checkcont(self) -> bool:
         '''Checks if program should be ended'''
         if (self.green and '' not in self.green) or self.action == '5':
             print(f'Program ended on {self.attempts} attempts')
             return False
         return True
 
-    def gettopfive(self):
+    def gettopfive(self) -> dict:
         '''Prints and removes top five results'''
         result_slice = dict(islice(self.results.items(), 5))
         print(f'\n{result_slice}\n')
         [self.results.pop(key) for key in result_slice.keys()]
+        return result_slice
 
     def run(self):
         while True:
