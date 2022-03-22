@@ -1,11 +1,4 @@
-# Make a set of five letter words from file
-fiveLet = set()
-with open('words.txt','r') as f:
-    for line in f:
-        line = line.strip()
-        if len(line) == 5:
-            fiveLet.add(line)
-            
+           
 from itertools import islice
 from collections import Counter
 
@@ -129,13 +122,14 @@ class WordleSolver:
 
             if c == 'y':
                 self.yellow[i].add(w)
-                if c in self.black:
-                    self.black.remove(c)
 
-            if c == 'b' and c not in self.green and c not in self.yellow:
+            if c == 'b':
                 self.black.add(w)
 
         self.cum_yel = set.union(*self.yellow.values())
+
+        self.black.difference_update(self.green)
+        self.black.difference_update(self.cum_yel)
 
     def askaction(self, prevact3:bool=False) -> str:
         '''
@@ -245,6 +239,10 @@ class WordleSolver:
 
             self.attempts += 1
 
+            # d = self.__dict__.copy()
+            # d.pop('infile')
+            # print(d)
+
     def setpoints(self):
         '''Resets the points attribute according to words in infile.'''
         all_lets = []
@@ -261,5 +259,11 @@ class WordleSolver:
             reverse=True,
         ))
         self.points = let_count
+        
+# Make a set of five letter words from file
+with open('words.txt','r') as f:
+    wordsfile = f.read().split('\n')
+
+fiveLet = [word for word in wordsfile if len(word) == 5]
 
 app = WordleSolver(fiveLet)
