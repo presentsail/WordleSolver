@@ -1,5 +1,5 @@
            
-from itertools import islice
+from itertools import islice, chain
 from collections import Counter
 
 class WordleSolver:
@@ -17,6 +17,7 @@ class WordleSolver:
         infile:iter, 
         wordlength:int = 5, 
         resetpoints:bool = False,
+        run:bool=True,
     ):
         '''
         Initiates WordleSolver instance attributes and runs run method.
@@ -49,8 +50,8 @@ class WordleSolver:
         self.action = -1
 
         self.attempts = 1
-
-        self.run()
+        if run:
+            self.run()
 
     def __str__(self):
         string = (f'green: {self.green}\n'
@@ -131,6 +132,10 @@ class WordleSolver:
         self.black.difference_update(self.green)
         self.black.difference_update(self.cum_yel)
 
+        for i, let in enumerate(self.green):
+            if let:
+                self.yellow[i].difference_update([let])
+
     def askaction(self, prevact3:bool=False) -> str:
         '''
         Determines available actions, displays them, and asks user
@@ -146,16 +151,16 @@ class WordleSolver:
                    "5": "end program",
                    }
 
-        if len(self.results) == 1:
+        if len(self.results) <= 1:
             del options['2']
             del options['3']
 
         if prevact3:
             del options['1']
-            del options['2']
-
-        if not self.results:
-            del options['3']
+            try:
+                del options['2']
+            except KeyError:
+                pass
 
         for option, instruction in options.items():
             print(f'({option}) - {instruction}')
@@ -221,6 +226,7 @@ class WordleSolver:
 
                 elif self.action == '2':
                     del self.results[self.result]
+                    print()
                     self.gettophit()
 
                 elif self.action == '3':
@@ -245,20 +251,20 @@ class WordleSolver:
 
     def setpoints(self):
         '''Resets the points attribute according to words in infile.'''
-        all_lets = []
-        for word in self.infile:
-            all_lets += list(word)
+        all_lets = list(chain(*self.infile))
         let_count = dict(Counter(all_lets))
         minimum = min(let_count.values())
         for let in let_count:
             let_count[let] //= minimum
-
+        # Sort dictionary into descending order by value
+        # just to look nice
         let_count = dict(sorted(
             let_count.items(),
             key=lambda item: item[1],
             reverse=True,
         ))
         self.points = let_count
+        return self.points
         
 # Make a set of five letter words from file
 with open('words.txt','r') as f:
