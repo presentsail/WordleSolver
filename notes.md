@@ -11,3 +11,9 @@ path = f'{os.path.dirname(__file__)}/../{filename}'
 with open(path) as f:
     pass
 ```
+
+or 
+
+```py
+open(os.path.join(os.path.dirname(__file__), os.pardir, 'filename.txt'))
+```
